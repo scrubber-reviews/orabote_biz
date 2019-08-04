@@ -121,6 +121,10 @@ class Review:
     author = None
     sub_reviews = []
 
+    def get_text(self):
+        return 'Плюсы: {}\n Минусы: {}'.format(self.plus_comment,
+                                               self.minus_comment)
+
 
 if __name__ == '__main__':
     prov = OraboteBiz(1169)
