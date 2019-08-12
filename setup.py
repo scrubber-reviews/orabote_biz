@@ -4,7 +4,6 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-from .orabote_biz import __version__
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -46,6 +45,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/NMelis/orabote_biz',
-    version=__version__,
+    version='0.1.4',
     zip_safe=False,
 )
