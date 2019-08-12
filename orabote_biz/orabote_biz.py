@@ -74,11 +74,9 @@ class OraboteBiz:
         new_review.id = self._convert_string_to_int(
             review_soup.find('a', itemprop='url')['href'])
         new_review.date = review_soup.find('meta', itemprop='datePublished').attrs['content']
-        new_review.rating = self._convert_string_to_int(review_soup.find('meta', itemprop='ratingValue')['content'])
-        author = Author()
-        author.name = review_soup.find_all('meta', itemprop='name')[1].attrs['content']
-        author.location = review_soup.select('div.panel.panel-default>div>span>i')[1].text
-        new_review.author = author
+        new_review.rating.average_rating = self._convert_string_to_int(review_soup.find('meta', itemprop='ratingValue')['content'])
+        new_review.author.name = review_soup.find_all('meta', itemprop='name')[1].attrs['content']
+        new_review.author.location = review_soup.select('div.panel.panel-default>div>span>i')[1].text
         return new_review
 
     @staticmethod
@@ -109,21 +107,61 @@ class OraboteBiz:
 
 
 class Author:
-    name = ''
-    location = ''
+
+    def __init__(self):
+        self.name = ''
+        self.location = ''
+
+    def get_name(self):
+        return self.name
+
+    def get_dict(self):
+        return {
+            'name': self.name,
+            'location': self.location,
+        }
+
+
+class Rating:
+    min_scale = 1
+    max_scale = 5
+
+    def __init__(self):
+        self.average_rating = None
+
+    def get_dict(self):
+        return {
+            'min_scale': self.min_scale,
+            'max_scale': self.max_scale,
+            'average_rating': self.average_rating,
+        }
 
 
 class Review:
-    id = ''
-    plus_comment = ''
-    minus_comment = ''
-    date = None
-    author = None
-    sub_reviews = []
+
+    def __init__(self):
+        self.id = None
+        self.plus_comment = None
+        self.minus_comment = None
+        self.date = None
+        self.rating = Rating()
+        self.author = Author()
+        self.sub_reviews = []
 
     def get_text(self):
         return 'Плюсы: {}\n Минусы: {}'.format(self.plus_comment,
                                                self.minus_comment)
+
+    def get_dict(self):
+        return {
+            'id': self.id,
+            'plus_comment': self.plus_comment,
+            'minus_comment': self.minus_comment,
+            'text': self.get_text(),
+            'date': self.date,
+            'rating': self.rating.get_dict(),
+            'author': self.author.get_dict(),
+        }
 
 
 if __name__ == '__main__':
@@ -131,4 +169,4 @@ if __name__ == '__main__':
     prov.start()
     print(prov._count_reviews, len(prov.reviews))
     for r in prov.reviews:
-        print(r.id, r.plus_comment[:20], r.author.name, r.author.location)
+        print(r.get_dict())
